@@ -1,18 +1,24 @@
 function loadChart() {
   var s = document.getElementById('sym').value;
-  document.getElementById('tv-box').innerHTML = '<div id="tv_chart" style="height:270px"></div>';
-  new TradingView.widget({
-    container_id: "tv_chart",
-    autosize: true,
-    symbol: s,
-    interval: "15",
-    timezone: "Etc/UTC",
-    theme: "dark",
-    style: "1",
-    locale: "en",
-    hide_top_toolbar: true,
-    save_image: false
+  var box = document.getElementById('tv-box');
+  box.innerHTML = '';
+  var sc = document.createElement('script');
+  sc.src = 'https://tradingview.com';
+  sc.type = 'text/javascript';
+  sc.async = true;
+  sc.innerHTML = JSON.stringify({
+    "autosize": true,
+    "symbol": s,
+    "interval": "15",
+    "timezone": "Etc/UTC",
+    "theme": "dark",
+    "style": "1",
+    "locale": "en",
+    "hide_top_toolbar": true,
+    "allow_symbol_change": false,
+    "support_host": "https://tradingview.com"
   });
+  box.appendChild(sc);
 }
 
 function drawPath(c, pp, sl, tp, isBull) {
@@ -34,7 +40,7 @@ function drawPath(c, pp, sl, tp, isBull) {
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash([5, 5]);
+    ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(10, y);
