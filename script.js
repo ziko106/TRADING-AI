@@ -1,24 +1,7 @@
 function loadChart() {
-  var s = document.getElementById('sym').value;
+  var s = encodeURIComponent(document.getElementById('sym').value);
   var box = document.getElementById('tv-box');
-  box.innerHTML = '';
-  var sc = document.createElement('script');
-  sc.src = 'https://tradingview.com';
-  sc.type = 'text/javascript';
-  sc.async = true;
-  sc.innerHTML = JSON.stringify({
-    "autosize": true,
-    "symbol": s,
-    "interval": "15",
-    "timezone": "Etc/UTC",
-    "theme": "dark",
-    "style": "1",
-    "locale": "en",
-    "hide_top_toolbar": true,
-    "allow_symbol_change": false,
-    "support_host": "https://tradingview.com"
-  });
-  box.appendChild(sc);
+  box.innerHTML = '<iframe src="https://tradingview.com' + s + '&interval=15&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0f172a&theme=dark&style=1&timezone=Etc%2FUTC&locale=en" style="width:100%;height:270px;border:0;" allowtransparency="true" scrolling="no"></iframe>';
 }
 
 function drawPath(c, pp, sl, tp, isBull) {
