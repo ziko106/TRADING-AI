@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeBot AI — Visual Trajectory & Chart Robot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <div class="top">
+      <span class="badge">🤖 VISUAL TRAJECTORY ROBOT</span>
+      <span class="live-dot">● LIVE ENGINE</span>
+    </div>
+    <h1>TradeBot AI Path Predictor</h1>
+    <p class="lead">Select a live market, enter session High, Low & Current Price to draw the projected destination radar & risk targets.</p>
+
+    <label>Select Live TradingView Chart:</label>
+    <select id="sym" onchange="loadChart()">
+      <option value="OANDA:XAUUSD">🥇 GOLD (XAU/USD) — Spot</option>
+      <option value="BINANCE:BTCUSDT">₿ BITCOIN (BTC/USDT)</option>
+      <option value="FX:EURUSD">💶 EUR / USD — Forex Major</option>
+      <option value="FOREXCOM:NSXUSD">📈 NASDAQ 100 (US100)</option>
+    </select>
+
+    <div class="chart-box" id="tv-box"></div>
+
+    <div class="grid">
+      <div>
+        <label>Session High:</label>
+        <input type="number" step="any" id="p-hi" value="2750" />
+      </div>
+      <div>
+        <label>Session Low:</label>
+        <input type="number" step="any" id="p-lo" value="2710" />
+      </div>
+      <div>
+        <label>Current Price:</label>
+        <input type="number" step="any" id="p-cl" value="2738" />
+      </div>
+    </div>
+
+    <button type="button" class="btn" onclick="runBot()">⚡ DRAW TRAJECTORY & RUN ANALYSIS</button>
+
+    <div class="radar-wrap">
+      <div class="radar-title">📐 PROJECTED PRICE DESTINATION RADAR</div>
+      <canvas id="radar" width="540" height="190"></canvas>
+    </div>
+
+    <div class="card" id="bot-out"></div>
+    <div class="disc">Educational & mathematical visualization tool only. Not financial advice.</div>
+  </div>
+
+  <script src="https://tradingview.com"></script>
+  <script src="script.js"></script>
+</body>
+</html>
