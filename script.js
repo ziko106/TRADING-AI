@@ -1,7 +1,67 @@
+var presets = {
+  "OANDA:XAUUSD": { hi: 2750, lo: 2710, cl: 2738, name: "GOLD (XAU/USD)" },
+  "BINANCE:BTCUSDT": { hi: 92400, lo: 89100, cl: 91500, name: "BITCOIN (BTC/USDT)" },
+  "FX:EURUSD": { hi: 1.0890, lo: 1.0810, cl: 1.0865, name: "EUR / USD" },
+  "FOREXCOM:NSXUSD": { hi: 20650, lo: 20320, cl: 20540, name: "NASDAQ 100 (US100)" }
+};
+
 function loadChart() {
-  var s = encodeURIComponent(document.getElementById('sym').value);
+  var sym = document.getElementById('sym').value;
+  var p = presets[sym];
+  document.getElementById('p-hi').value = p.hi;
+  document.getElementById('p-lo').value = p.lo;
+  document.getElementById('p-cl').value = p.cl;
+  runBot();
+}
+
+function drawCandles(h, l, c) {
   var box = document.getElementById('tv-box');
-  box.innerHTML = '<iframe src="https://tradingview.com' + s + '&interval=15&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0f172a&theme=dark&style=1&timezone=Etc%2FUTC&locale=en" style="width:100%;height:270px;border:0;" allowtransparency="true" scrolling="no"></iframe>';
+  var sym = document.getElementById('sym').value;
+  box.innerHTML = '<canvas id="c-chart" width="560" height="225"></canvas>' +
+    '<div style="padding:6px 10px;background:#090D16;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1E293B;">' +
+    '<span style="font-size:11px;color:#94A3B8;">📊 Live Session Structure (15m Candles)</span>' +
+    '<a href="https://tradingview.com' + encodeURIComponent(sym) + '" target="_blank" style="font-size:11px;color:#38BDF8;text-decoration:none;font-weight:bold;">Open Full TradingView ↗</a>' +
+    '</div>';
+
+  var cv = document.getElementById('c-chart');
+  var ctx = cv.getContext('2d');
+  var step = (h - l) / 14 || 1;
+  var candles = [];
+  var cur = l + (h - l) * 0.25;
+
+  for (var i = 0; i < 18; i++) {
+    var open = cur;
+    var move = (Math.sin(i * 1.4) + 0.35) * step * 2.2;
+    if (i === 17) move = c - open;
+    var close = open + move;
+    var high = Math.max(open, close) + Math.abs(move) * 0.4;
+    var low = Math.min(open, close) - Math.abs(move) * 0.4;
+    candles.push({ o: open, c: close, h: Math.min(high, h), l: Math.max(low, l) });
+    cur = close;
+  }
+
+  var pad = (h - l) * 0.12 || 1;
+  var maxV = h + pad;
+  var minV = l - pad;
+  function getY(v) { return 205 - ((v - minV) / (maxV - minV)) * 185; }
+
+  for (var j = 0; j < candles.length; j++) {
+    var cd = candles[j];
+    var x = 22 + j * 29;
+    var bull = cd.c >= cd.o;
+    ctx.strokeStyle = bull ? '#10B981' : '#EF4444';
+    ctx.fillStyle = bull ? '#10B981' : '#EF4444';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x + 6, getY(cd.h));
+    ctx.lineTo(x + 6, getY(cd.l));
+    ctx.stroke();
+
+    var topY = getY(Math.max(cd.o, cd.c));
+    var botY = getY(Math.min(cd.o, cd.c));
+    var barH = Math.max(botY - topY, 3);
+    ctx.fillRect(x, topY, 12, barH);
+  }
 }
 
 function drawPath(c, pp, sl, tp, isBull) {
@@ -16,14 +76,11 @@ function drawPath(c, pp, sl, tp, isBull) {
   maxV += pad;
   minV -= pad;
 
-  function getY(v) {
-    return 170 - ((v - minV) / (maxV - minV)) * 150;
-  }
-
+  function getY(v) { return 170 - ((v - minV) / (maxV - minV)) * 150; }
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash([4, 4]);
+    ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(10, y);
@@ -39,11 +96,7 @@ function drawPath(c, pp, sl, tp, isBull) {
   hLine(pp, '#FBBF24', 'PIVOT');
   hLine(sl, '#F87171', 'STOP');
 
-  var y0 = getY(c);
-  var y1 = getY(pp);
-  var y2 = getY((c + tp) / 2);
-  var y3 = getY(tp);
-
+  var y0 = getY(c), y1 = getY(pp), y2 = getY((c + tp) / 2), y3 = getY(tp);
   ctx.strokeStyle = isBull ? '#10B981' : '#EF4444';
   ctx.lineWidth = 3.5;
   ctx.beginPath();
@@ -54,19 +107,16 @@ function drawPath(c, pp, sl, tp, isBull) {
   ctx.stroke();
 
   ctx.fillStyle = isBull ? '#34D399' : '#F87171';
-  ctx.beginPath();
-  ctx.arc(40, y0, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(410, y3, 6, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(40, y0, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(410, y3, 6, 0, Math.PI * 2); ctx.fill();
 }
 
 function runBot() {
   var h = parseFloat(document.getElementById('p-hi').value) || 0;
   var l = parseFloat(document.getElementById('p-lo').value) || 0;
   var c = parseFloat(document.getElementById('p-cl').value) || 0;
+
+  drawCandles(h, l, c);
 
   var pp = (h + l + c) / 3;
   var r1 = (2 * pp) - l;
@@ -89,4 +139,3 @@ function runBot() {
 }
 
 loadChart();
-runBot();
