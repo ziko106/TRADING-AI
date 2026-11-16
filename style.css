@@ -56,11 +56,12 @@ h1 {
 }
 
 .chart-box {
-  height: 270px;
+  height: 265px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #334155;
   margin-bottom: 14px;
+  background: #090D16;
 }
 
 .grid {
