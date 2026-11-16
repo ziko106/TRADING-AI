@@ -10,17 +10,17 @@
   <div class="app">
     <div class="top">
       <span class="badge">🤖 VISUAL TRAJECTORY ROBOT</span>
-      <span class="live-dot">● LIVE ENGINE</span>
+      <span class="live-dot">● AUTO LIVE FEED</span>
     </div>
     <h1>TradeBot AI Path Predictor</h1>
-    <p class="lead">Select a live market, enter session High, Low & Current Price to draw the projected destination radar & risk targets.</p>
+    <p class="lead">Select a live crypto market for instant 24h auto-sync, or input Gold (XAU/USD) session levels to draw projected trajectories.</p>
 
-    <label>Select Live TradingView Chart:</label>
+    <label>Select Market Feed:</label>
     <select id="sym" onchange="loadChart()">
-      <option value="OANDA:XAUUSD">🥇 GOLD (XAU/USD) — Spot</option>
-      <option value="BINANCE:BTCUSDT">₿ BITCOIN (BTC/USDT)</option>
-      <option value="FX:EURUSD">💶 EUR / USD — Forex Major</option>
-      <option value="FOREXCOM:NSXUSD">📈 NASDAQ 100 (US100)</option>
+      <option value="BINANCE:BTCUSDT">₿ BITCOIN (BTC/USDT) — Auto Live Feed</option>
+      <option value="BINANCE:ETHUSDT">🔷 ETHEREUM (ETH/USDT) — Auto Live Feed</option>
+      <option value="BINANCE:SOLUSDT">🟣 SOLANA (SOL/USDT) — Auto Live Feed</option>
+      <option value="OANDA:XAUUSD">🥇 GOLD (XAU/USD) — Manual Input</option>
     </select>
 
     <div class="chart-box" id="tv-box"></div>
@@ -28,15 +28,15 @@
     <div class="grid">
       <div>
         <label>Session High:</label>
-        <input type="number" step="any" id="p-hi" value="2750" />
+        <input type="number" step="any" id="p-hi" value="92400" />
       </div>
       <div>
         <label>Session Low:</label>
-        <input type="number" step="any" id="p-lo" value="2710" />
+        <input type="number" step="any" id="p-lo" value="89100" />
       </div>
       <div>
         <label>Current Price:</label>
-        <input type="number" step="any" id="p-cl" value="2738" />
+        <input type="number" step="any" id="p-cl" value="91500" />
       </div>
     </div>
 
@@ -51,7 +51,6 @@
     <div class="disc">Educational & mathematical visualization tool only. Not financial advice.</div>
   </div>
 
-  <script src="https://tradingview.com"></script>
   <script src="script.js"></script>
 </body>
 </html>
