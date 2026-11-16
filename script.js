@@ -121,7 +121,7 @@ function drawPath(c, pp, sl, tp2, isBull) {
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash();
+    ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(10, y); ctx.lineTo(435, y); ctx.stroke();
     ctx.setLineDash([]);
