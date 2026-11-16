@@ -8,7 +8,7 @@ function fetchLiveMarket() {
   fetch('https://coingecko.com' + coinId)
     .then(function(r) { return r.json(); })
     .then(function(arr) {
-      var d = arr[0];
+      var d = arr;
       var hi = parseFloat(d.high_24h);
       var lo = parseFloat(d.low_24h);
       var cl = parseFloat(d.current_price);
@@ -81,12 +81,12 @@ function drawCandles(h, l, c, sym) {
   }
 }
 
-function drawPath(c, pp, sl, tp, isBull) {
+function drawPath(c, pp, sl, tp2, isBull) {
   var cv = document.getElementById('radar');
   var ctx = cv.getContext('2d');
   ctx.clearRect(0, 0, cv.width, cv.height);
 
-  var all = [c, pp, sl, tp];
+  var all = [c, pp, sl, tp2];
   var maxV = Math.max.apply(null, all);
   var minV = Math.min.apply(null, all);
   var pad = (maxV - minV) * 0.2 || 1;
@@ -97,7 +97,7 @@ function drawPath(c, pp, sl, tp, isBull) {
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash([5, 5]);
+    ctx.setLineDash();
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(10, y);
@@ -109,11 +109,11 @@ function drawPath(c, pp, sl, tp, isBull) {
     ctx.fillText(lbl + ': ' + val.toFixed(2), 440, y + 4);
   }
 
-  hLine(tp, '#38BDF8', 'TARGET');
-  hLine(pp, '#FBBF24', 'PIVOT');
+  hLine(tp2, '#38BDF8', 'TP2');
+  hLine(pp, '#FBBF24', 'ENTRY');
   hLine(sl, '#F87171', 'STOP');
 
-  var y0 = getY(c), y1 = getY(pp), y2 = getY((c + tp) / 2), y3 = getY(tp);
+  var y0 = getY(c), y1 = getY(pp), y2 = getY((pp + tp2) / 2), y3 = getY(tp2);
   ctx.strokeStyle = isBull ? '#10B981' : '#EF4444';
   ctx.lineWidth = 3.5;
   ctx.beginPath();
@@ -136,33 +136,37 @@ function runBot(h, l, c, chg, sym) {
   drawCandles(h, l, c, sym);
 
   var pp = (h + l + c) / 3;
-  var r1 = (2 * pp) - l;
-  var s1 = (2 * pp) - h;
-  var rangePct = ((h - l) / l) * 100;
+  var atrRisk = (h - l) * 0.35;
   var isBull = c >= pp;
 
   var bias = isBull
-    ? '<span class="bull">🟢 BULLISH MOMENTUM (Above Daily Pivot)</span>'
-    : '<span class="bear">🔴 BEARISH PRESSURE (Below Daily Pivot)</span>';
-  var sl = isBull ? s1 : r1;
-  var tp = isBull ? (c + (c - sl) * 2) : (c - (sl - c) * 2);
+    ? '<span class="bull">🟢 BUY / LONG SETUP (Above Pivot)</span>'
+    : '<span class="bear">🔴 SELL / SHORT SETUP (Below Pivot)</span>';
 
-  drawPath(c, pp, sl, tp, isBull);
+  var entry = pp;
+  var sl = isBull ? (entry - atrRisk) : (entry + atrRisk);
+  var tp1 = isBull ? (entry + atrRisk * 1.5) : (entry - atrRisk * 1.5);
+  var tp2 = isBull ? (entry + atrRisk * 2.5) : (entry - atrRisk * 2.5);
+  var tp3 = isBull ? (entry + atrRisk * 3.5) : (entry - atrRisk * 3.5);
+
+  drawPath(c, entry, sl, tp2, isBull);
 
   document.getElementById('bot-out').innerHTML =
-    '<div class="row"><span>🤖 Daily Market Bias:</span>' + bias + '</div>' +
-    '<div class="row"><span>⚖️ Institutional Pivot (PP):</span><strong>' + pp.toFixed(2) + '</strong></div>' +
-    '<div class="row"><span>🛡️ Structural Stop-Loss:</span><strong style="color:#F87171">' + sl.toFixed(2) + '</strong></div>' +
-    '<div class="row" style="border:none"><span>🎯 Projected Destination (1:2 R:R):</span><strong style="color:#38BDF8">' + tp.toFixed(2) + '</strong></div>';
+    '<div class="row"><span>🤖 Signal Direction:</span>' + bias + '</div>' +
+    '<div class="row"><span>🎯 Optimal Entry Zone (Pivot):</span><strong style="color:#FBBF24">' + entry.toFixed(2) + '</strong></div>' +
+    '<div class="row"><span>🛑 Real Stop-Loss (ATR Risk):</span><strong style="color:#F87171">' + sl.toFixed(2) + '</strong></div>' +
+    '<div class="row"><span>✅ Take-Profit 1 (1:1.5 R:R):</span><strong style="color:#34D399">' + tp1.toFixed(2) + '</strong></div>' +
+    '<div class="row"><span>✅ Take-Profit 2 (1:2.5 R:R):</span><strong style="color:#38BDF8">' + tp2.toFixed(2) + '</strong></div>' +
+    '<div class="row" style="border:none"><span>🚀 Take-Profit 3 (1:3.5 Runner):</span><strong style="color:#A78BFA">' + tp3.toFixed(2) + '</strong></div>';
 
   var assetName = sym === 'BTCUSDT' ? 'Bitcoin (BTC/USD)' : 'Spot Gold (XAU/USD)';
   var today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
   var briefing = isBull
-    ? assetName + ' is trading above its central daily pivot (' + pp.toFixed(2) + ') with a 24h volatility range of ' + rangePct.toFixed(2) + '%. Buyers control intraday structure. Watch for a healthy pullback toward ' + pp.toFixed(2) + ' to target upper liquidity near ' + tp.toFixed(2) + ', while keeping strict invalidation below ' + sl.toFixed(2) + '.'
-    : assetName + ' is holding below its central daily pivot (' + pp.toFixed(2) + ') across a ' + rangePct.toFixed(2) + '% daily range. Sellers dominate short-term momentum. Any relief bounce into ' + pp.toFixed(2) + ' faces resistance, projecting a continuation toward ' + tp.toFixed(2) + ' unless price reclaims ' + sl.toFixed(2) + '.';
+    ? assetName + ' holds bullish structure above ' + entry.toFixed(2) + '. Institutional algorithm recommends waiting for a pullback entry near ' + entry.toFixed(2) + ' with a tight ATR Stop-Loss at ' + sl.toFixed(2) + '. Scale out profits at TP1 (' + tp1.toFixed(2) + ') and TP2 (' + tp2.toFixed(2) + ').'
+    : assetName + ' shows bearish structure below ' + entry.toFixed(2) + '. Institutional algorithm favors short entries on a retest of ' + entry.toFixed(2) + ' with a protected Stop-Loss above ' + sl.toFixed(2) + '. Target liquidity pools at TP1 (' + tp1.toFixed(2) + ') and TP2 (' + tp2.toFixed(2) + ').';
 
   document.getElementById('ai-report').innerHTML =
-    '<div style="font-size:12px;color:#38BDF8;font-weight:bold;margin-bottom:6px;">🧠 AI DAILY BRIEFING — ' + today.toUpperCase() + '</div>' +
+    '<div style="font-size:12px;color:#38BDF8;font-weight:bold;margin-bottom:6px;">🧠 AI EXECUTION PLAN — ' + today.toUpperCase() + '</div>' +
     '<p style="font-size:12.5px;color:#E2E8F0;line-height:1.55;margin:0;">' + briefing + '</p>';
 }
 
