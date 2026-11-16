@@ -9,42 +9,39 @@
 <body>
   <div class="app">
     <div class="top">
-      <span class="badge" id="t-badge">🤖 DAILY AI MARKET ROBOT</span>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button type="button" id="lang-btn" onclick="toggleLang()" style="background:#1E293B;color:#38BDF8;border:1px solid #38BDF8;padding:4px 9px;border-radius:8px;font-size:11px;font-weight:bold;cursor:pointer;">🇫🇷 FR</button>
-        <span class="live-dot" id="sync-status">● SYNCING...</span>
-      </div>
+      <span class="badge">🤖 DAILY AI MARKET ROBOT</span>
+      <span class="live-dot" id="sync-status">● SYNCING LIVE FEED...</span>
     </div>
-    <h1 id="t-title">TradeBot AI: BTC & Gold</h1>
-    <p class="lead" id="t-lead">Real-time automated daily technical analysis, institutional liquidity zones & trajectory radar for Bitcoin and Gold.</p>
+    <h1>TradeBot AI: BTC & Gold</h1>
+    <p class="lead">Real-time automated daily technical analysis, institutional liquidity zones & trajectory radar for Bitcoin and Gold.</p>
 
-    <label id="t-lbl-sym">Select Asset for Live Daily AI Analysis:</label>
+    <label>Select Asset for Live Daily AI Analysis:</label>
     <select id="sym" onchange="fetchLiveMarket()">
-      <option value="BTCUSDT" id="opt-btc">₿ BITCOIN (BTC / USD) — Live 24h Market</option>
-      <option value="PAXGUSDT" id="opt-gold">🥇 GOLD (XAU / USD) — Live Spot Gold</option>
+      <option value="BTCUSDT">₿ BITCOIN (BTC / USD) — Live 24h Market</option>
+      <option value="PAXGUSDT">🥇 GOLD (XAU / USD) — Live Spot Gold</option>
     </select>
 
     <div class="chart-box" id="tv-box"></div>
 
     <div class="grid">
       <div>
-        <label id="t-lbl-hi">24h High:</label>
+        <label>24h High:</label>
         <input type="number" step="any" id="p-hi" readonly />
       </div>
       <div>
-        <label id="t-lbl-lo">24h Low:</label>
+        <label>24h Low:</label>
         <input type="number" step="any" id="p-lo" readonly />
       </div>
       <div>
-        <label id="t-lbl-cl">Live Price:</label>
+        <label>Live Price:</label>
         <input type="number" step="any" id="p-cl" readonly />
       </div>
     </div>
 
-    <button type="button" class="btn" id="t-btn-ref" onclick="fetchLiveMarket()">🔄 REFRESH LIVE DAILY ANALYSIS</button>
+    <button type="button" class="btn" onclick="fetchLiveMarket()">🔄 REFRESH LIVE DAILY ANALYSIS</button>
 
     <div class="radar-wrap">
-      <div class="radar-title" id="t-radar-title">📐 AI PROJECTED DESTINATION RADAR</div>
+      <div class="radar-title">📐 AI PROJECTED DESTINATION RADAR</div>
       <canvas id="radar" width="540" height="190"></canvas>
     </div>
 
@@ -52,24 +49,24 @@
     <div class="card" id="ai-report"></div>
 
     <div class="card" style="margin-top:12px;">
-      <div style="font-size:12px;color:#FBBF24;font-weight:bold;margin-bottom:8px;" id="t-news-title">📰 USD MACRO NEWS IMPACT ON GOLD & BITCOIN</div>
-      <div class="row"><span id="t-n1">🔴 High CPI / Inflation Up:</span><strong style="color:#F87171">USD ⬆ | Gold & BTC ⬇</strong></div>
-      <div class="row"><span id="t-n2">🟢 Fed Rate Cut / Dovish:</span><strong style="color:#34D399">USD ⬇ | Gold & BTC ⬆</strong></div>
-      <div class="row"><span id="t-n3">🔴 Strong NFP / Jobs Beat:</span><strong style="color:#F87171">USD ⬆ | Gold & BTC ⬇</strong></div>
-      <div class="row" style="border:none"><span id="t-n4">⚠️ High-Impact Rule:</span><strong style="color:#38BDF8" id="t-n4v">Avoid entry 15m before/after news</strong></div>
+      <div style="font-size:12px;color:#FBBF24;font-weight:bold;margin-bottom:8px;">📰 USD MACRO NEWS IMPACT ON GOLD & BITCOIN</div>
+      <div class="row"><span>🔴 High CPI / Inflation Up:</span><strong style="color:#F87171">USD ⬆ | Gold & BTC ⬇</strong></div>
+      <div class="row"><span>🟢 Fed Rate Cut / Dovish:</span><strong style="color:#34D399">USD ⬇ | Gold & BTC ⬆</strong></div>
+      <div class="row"><span>🔴 Strong NFP / Jobs Beat:</span><strong style="color:#F87171">USD ⬆ | Gold & BTC ⬇</strong></div>
+      <div class="row" style="border:none"><span>⚠️ High-Impact Rule:</span><strong style="color:#38BDF8">Avoid entry 15m before/after news</strong></div>
     </div>
 
     <div class="card" style="margin-top:12px;">
-      <div style="font-size:12px;color:#38BDF8;font-weight:bold;margin-bottom:8px;" id="t-cal-title">📅 LIVE ECONOMIC CALENDAR & KEY SESSIONS (UTC)</div>
-      <div class="row"><span id="t-s1">🇬🇧 London Open (High Volatility):</span><strong>07:00 – 10:00 UTC</strong></div>
-      <div class="row"><span id="t-s2">🇺🇸 NY Open & USD News Window:</span><strong style="color:#FBBF24">12:30 – 15:00 UTC</strong></div>
+      <div style="font-size:12px;color:#38BDF8;font-weight:bold;margin-bottom:8px;">📅 LIVE ECONOMIC CALENDAR & KEY SESSIONS (UTC)</div>
+      <div class="row"><span>🇬🇧 London Open (High Volatility):</span><strong>07:00 – 10:00 UTC</strong></div>
+      <div class="row"><span>🇺🇸 NY Open & USD News Window:</span><strong style="color:#FBBF24">12:30 – 15:00 UTC</strong></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
         <a href="https://forexfactory.com" target="_blank" style="background:#059669;color:#fff;text-align:center;padding:10px;border-radius:8px;font-size:11.5px;font-weight:bold;text-decoration:none;">📊 Forex Factory Live ↗</a>
         <a href="https://investing.com" target="_blank" style="background:#1E40AF;color:#fff;text-align:center;padding:10px;border-radius:8px;font-size:11.5px;font-weight:bold;text-decoration:none;">🌐 Investing Calendar ↗</a>
       </div>
     </div>
 
-    <div class="disc" id="t-disc">Automated mathematical & technical market structure analysis. Educational use only, not financial advice.</div>
+    <div class="disc">Automated mathematical & technical market structure analysis. Educational use only, not financial advice.</div>
   </div>
 
   <script src="script.js"></script>
