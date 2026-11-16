@@ -40,7 +40,7 @@ function fetchLiveMarket() {
   fetch('https://coingecko.com' + coinId)
     .then(function(r) { return r.json(); })
     .then(function(arr) {
-      var d = arr[0];
+      var d = arr.shift();
       var hi = parseFloat(d.high_24h);
       var lo = parseFloat(d.low_24h);
       var cl = parseFloat(d.current_price);
@@ -78,34 +78,34 @@ function drawCandles(h, l, c, sym) {
   var cv = document.getElementById('c-chart');
   var ctx = cv.getContext('2d');
   var step = (h - l) / 14 || 1;
-  var candles = [];
   var cur = l + (h - l) * 0.3;
+  var pad = (h - l) * 0.12 || 1;
+  var maxV = h + pad;
+  var minV = l - pad;
+
+  function getY(v) { return 205 - ((v - minV) / (maxV - minV)) * 185; }
 
   for (var i = 0; i < 18; i++) {
     var open = cur;
     var move = (Math.sin(i * 1.5) + 0.3) * step * 2;
     if (i === 17) move = c - open;
     var close = open + move;
-    var high = Math.max(open, close) + Math.abs(move) * 0.35;
-    var low = Math.min(open, close) - Math.abs(move) * 0.35;
-    candles.push({ o: open, c: close, h: Math.min(high, h), l: Math.max(low, l) });
+    var high = Math.min(Math.max(open, close) + Math.abs(move) * 0.35, h);
+    var low = Math.max(Math.min(open, close) - Math.abs(move) * 0.35, l);
     cur = close;
-  }
 
-  var pad = (h - l) * 0.12 || 1;
-  var maxV = h + pad, minV = l - pad;
-  function getY(v) { return 205 - ((v - minV) / (maxV - minV)) * 185; }
-
-  for (var j = 0; j < candles.length; j++) {
-    var cd = candles[j];
-    var x = 22 + j * 29;
-    var bull = cd.c >= cd.o;
+    var x = 22 + i * 29;
+    var bull = close >= open;
     ctx.strokeStyle = bull ? '#10B981' : '#EF4444';
     ctx.fillStyle = bull ? '#10B981' : '#EF4444';
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(x + 6, getY(cd.h)); ctx.lineTo(x + 6, getY(cd.l)); ctx.stroke();
-    var topY = getY(Math.max(cd.o, cd.c));
-    var botY = getY(Math.min(cd.o, cd.c));
+    ctx.beginPath();
+    ctx.moveTo(x + 6, getY(high));
+    ctx.lineTo(x + 6, getY(low));
+    ctx.stroke();
+
+    var topY = getY(Math.max(open, close));
+    var botY = getY(Math.min(open, close));
     ctx.fillRect(x, topY, 12, Math.max(botY - topY, 3));
   }
 }
@@ -114,30 +114,48 @@ function drawPath(c, pp, sl, tp2, isBull) {
   var cv = document.getElementById('radar');
   var ctx = cv.getContext('2d');
   ctx.clearRect(0, 0, cv.width, cv.height);
-  var all = [c, pp, sl, tp2];
-  var maxV = Math.max.apply(null, all), minV = Math.min.apply(null, all);
-  var pad = (maxV - minV) * 0.2 || 1; maxV += pad; minV -= pad;
+
+  var maxV = Math.max(c, pp, sl, tp2);
+  var minV = Math.min(c, pp, sl, tp2);
+  var pad = (maxV - minV) * 0.2 || 1;
+  maxV += pad;
+  minV -= pad;
+
   function getY(v) { return 170 - ((v - minV) / (maxV - minV)) * 150; }
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(10, y); ctx.lineTo(435, y); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = col; ctx.font = 'bold 11px sans-serif';
+    ctx.beginPath();
+    ctx.moveTo(10, y);
+    ctx.lineTo(435, y);
+    ctx.stroke();
+    ctx.fillStyle = col;
+    ctx.font = 'bold 11px sans-serif';
     ctx.fillText(lbl + ': ' + val.toFixed(2), 440, y + 4);
   }
+
   hLine(tp2, '#38BDF8', 'TP2');
   hLine(pp, '#FBBF24', lang === 'en' ? 'ENTRY' : 'ENTRÉE');
   hLine(sl, '#F87171', 'STOP');
+
   var y0 = getY(c), y1 = getY(pp), y2 = getY((pp + tp2) / 2), y3 = getY(tp2);
   ctx.strokeStyle = isBull ? '#10B981' : '#EF4444';
   ctx.lineWidth = 3.5;
-  ctx.beginPath(); ctx.moveTo(40, y0); ctx.lineTo(150, y1); ctx.lineTo(280, y2); ctx.lineTo(410, y3); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(40, y0);
+  ctx.lineTo(150, y1);
+  ctx.lineTo(280, y2);
+  ctx.lineTo(410, y3);
+  ctx.stroke();
+
   ctx.fillStyle = isBull ? '#34D399' : '#F87171';
-  ctx.beginPath(); ctx.arc(40, y0, 5, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(410, y3, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc(40, y0, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(410, y3, 6, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function runBot(h, l, c, chg, sym) {
@@ -166,3 +184,4 @@ function runBot(h, l, c, chg, sym) {
     var assetEn = sym === 'BTCUSDT' ? 'Bitcoin (BTC/USD)' : 'Spot Gold (XAU/USD)';
     var dateEn = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
     var briefEn = isBull
+      ? assetEn + ' holds bullish structure above ' + entry.toFixed(2) + '. Algorithm recommends waiting for a pullback entry near ' + entry.toFixed(2) + ' with an ATR Stop-Loss at ' + sl.toFixed(2) + '. Target TP1 (' + tp1.toFixed(2) + ') and TP2 (' + tp2.toFixed(2) + ').'
