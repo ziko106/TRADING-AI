@@ -8,7 +8,7 @@ function fetchLiveMarket() {
   fetch('https://coingecko.com' + coinId)
     .then(function(r) { return r.json(); })
     .then(function(arr) {
-      var d = arr;
+      var d = arr[0];
       var hi = parseFloat(d.high_24h);
       var lo = parseFloat(d.low_24h);
       var cl = parseFloat(d.current_price);
@@ -97,7 +97,7 @@ function drawPath(c, pp, sl, tp2, isBull) {
   function hLine(val, col, lbl) {
     var y = getY(val);
     ctx.strokeStyle = col;
-    ctx.setLineDash();
+    ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(10, y);
