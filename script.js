@@ -40,7 +40,7 @@ function fetchLiveMarket() {
   fetch('https://coingecko.com' + coinId)
     .then(function(r) { return r.json(); })
     .then(function(arr) {
-      var d = arr;
+      var d = arr[0];
       var hi = parseFloat(d.high_24h);
       var lo = parseFloat(d.low_24h);
       var cl = parseFloat(d.current_price);
