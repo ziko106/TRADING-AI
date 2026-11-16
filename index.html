@@ -3,52 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeBot AI — Visual Trajectory & Chart Robot</title>
+  <title>TradeBot AI — Daily Bitcoin & Gold Institutional Robot</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app">
     <div class="top">
-      <span class="badge">🤖 VISUAL TRAJECTORY ROBOT</span>
-      <span class="live-dot">● AUTO LIVE FEED</span>
+      <span class="badge">🤖 DAILY AI MARKET ROBOT</span>
+      <span class="live-dot" id="sync-status">● SYNCING LIVE FEED...</span>
     </div>
-    <h1>TradeBot AI Path Predictor</h1>
-    <p class="lead">Select a live crypto market for instant 24h auto-sync, or input Gold (XAU/USD) session levels to draw projected trajectories.</p>
+    <h1>TradeBot AI: BTC & Gold</h1>
+    <p class="lead">Real-time automated daily technical analysis, institutional liquidity zones & trajectory radar for Bitcoin and Gold.</p>
 
-    <label>Select Market Feed:</label>
-    <select id="sym" onchange="loadChart()">
-      <option value="BINANCE:BTCUSDT">₿ BITCOIN (BTC/USDT) — Auto Live Feed</option>
-      <option value="BINANCE:ETHUSDT">🔷 ETHEREUM (ETH/USDT) — Auto Live Feed</option>
-      <option value="BINANCE:SOLUSDT">🟣 SOLANA (SOL/USDT) — Auto Live Feed</option>
-      <option value="OANDA:XAUUSD">🥇 GOLD (XAU/USD) — Manual Input</option>
+    <label>Select Asset for Live Daily AI Analysis:</label>
+    <select id="sym" onchange="fetchLiveMarket()">
+      <option value="BTCUSDT">₿ BITCOIN (BTC / USD) — Live 24h Market</option>
+      <option value="PAXGUSDT">🥇 GOLD (XAU / USD) — Live Spot Gold</option>
     </select>
 
     <div class="chart-box" id="tv-box"></div>
 
     <div class="grid">
       <div>
-        <label>Session High:</label>
-        <input type="number" step="any" id="p-hi" value="92400" />
+        <label>24h High:</label>
+        <input type="number" step="any" id="p-hi" readonly />
       </div>
       <div>
-        <label>Session Low:</label>
-        <input type="number" step="any" id="p-lo" value="89100" />
+        <label>24h Low:</label>
+        <input type="number" step="any" id="p-lo" readonly />
       </div>
       <div>
-        <label>Current Price:</label>
-        <input type="number" step="any" id="p-cl" value="91500" />
+        <label>Live Price:</label>
+        <input type="number" step="any" id="p-cl" readonly />
       </div>
     </div>
 
-    <button type="button" class="btn" onclick="runBot()">⚡ DRAW TRAJECTORY & RUN ANALYSIS</button>
+    <button type="button" class="btn" onclick="fetchLiveMarket()">🔄 REFRESH LIVE DAILY ANALYSIS</button>
 
     <div class="radar-wrap">
-      <div class="radar-title">📐 PROJECTED PRICE DESTINATION RADAR</div>
+      <div class="radar-title">📐 AI PROJECTED DESTINATION RADAR</div>
       <canvas id="radar" width="540" height="190"></canvas>
     </div>
 
-    <div class="card" id="bot-out"></div>
-    <div class="disc">Educational & mathematical visualization tool only. Not financial advice.</div>
+    <div class="card" id="bot-out" style="margin-bottom:12px"></div>
+    <div class="card" id="ai-report"></div>
+
+    <div class="disc">Automated mathematical & technical market structure analysis. Educational use only, not financial advice.</div>
   </div>
 
   <script src="script.js"></script>
